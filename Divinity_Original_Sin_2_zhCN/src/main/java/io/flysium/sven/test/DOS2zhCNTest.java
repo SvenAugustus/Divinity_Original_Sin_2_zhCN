@@ -56,7 +56,8 @@ public class DOS2zhCNTest {
 			System.out.println(
 					"=========           左边是最新的3.5文本 | 右边是3.3文本           ==========");
 			main_compareTwoDOS2XML_letterAndText(
-					"D:/svenfire/Downloads/english33.xml", gameEnglishXML);
+					"D:/svenfire/Downloads/english33.xml",
+					"D:/svenfire/Downloads/english35.xml");
 		}
 		/**
 		 * 比较两版汉化文本，并将旧版存在的新版不存在的汉化文本输出为增量文本 english_1.xml，
@@ -357,7 +358,10 @@ public class DOS2zhCNTest {
 				 * 计算英文字母占比
 				 */
 				double oldf = countLetter(textOld);
-				if (oldf > newf) {
+				if (oldf >= newf) {
+					continue;
+				}
+				if (oldf > 0.7) {
 					continue;
 				}
 				if (newf < 0.25) {
@@ -369,6 +373,9 @@ public class DOS2zhCNTest {
 				double distance = TextDiff.minDistance(textOld, textNew) * 1.0
 						/ textNew.length();
 				if (distance < 0.25 && newf < 0.5) {
+					continue;
+				}
+				if (distance < 0.2) {
 					continue;
 				}
 				list.add(
@@ -497,8 +504,9 @@ public class DOS2zhCNTest {
 			DOS2zhCNTest.NodeResult nodeResult = (DOS2zhCNTest.NodeResult) it
 					.next();
 			Element e = DocumentHelper.createElement("content");
-			DocumentHelper.createAttribute(e, "contentuid",
-					nodeResult.contentuid);
+			/*DocumentHelper.createAttribute(e, "contentuid",
+					nodeResult.contentuid);*/
+			e.addAttribute("contentuid", nodeResult.contentuid);
 			e.setText(buildNew ? nodeResult.newText : nodeResult.text);
 			if (printAll)
 				System.out.println(nodeResult.contentuid + "=" + (buildNew
