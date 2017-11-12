@@ -48,16 +48,36 @@ public class DOS2Extract implements IDocumentExtract {
       int autoMaxDiffereceLimit, boolean print) throws Exception {
     if (autoMaxDiffereceLimit > 0) {
       double f = autoMaxDiffereceLimit * 1.0 / 100.0;
+      /**
+       * 以第一个文本为比较基准，比较两版汉化文本，输出差异程度
+       */
       List<DiffResult> list =
           TextUtils.diff(documentInc, document, documentToMap, true, false, false);
       List<DiffResult> result = new ArrayList<DiffResult>(list.size());
-
+      List<DiffResult> ignore = new ArrayList<DiffResult>(list.size());
       for (DiffResult res : list) {
         if (res.getDifference() >= f) {
           result.add(res);
+        } else {
+          ignore.add(res);
         }
       }
-      return extractIncrement(result, false, print);
+      /**
+       * 根据节点数据，生成增量文本xml
+       */
+      boolean buildNew = false;
+      Document doc = extractIncrement(result, buildNew, print);
+      if (print) {
+        System.out.println("\n\n----------------------------以下文本低于差异度" + (autoMaxDiffereceLimit)
+            + "%不会替换生成增量文本-----------------");
+        // 打印不处理的部分
+        for (DiffResult nodeResult : ignore) {
+          System.out.println(nodeResult.getContentuid() + "="
+              + (buildNew ? (nodeResult.getText() + "|" + nodeResult.getNewText())
+                  : (nodeResult.getNewText() + "|" + nodeResult.getText())));
+        }
+      }
+      return doc;
     }
     Map<String, String> mOri = documentToMap.toMap(document);
     // 获取根节点元素对象
