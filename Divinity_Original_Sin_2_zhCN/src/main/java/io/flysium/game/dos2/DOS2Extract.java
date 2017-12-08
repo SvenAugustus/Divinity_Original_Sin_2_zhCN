@@ -122,9 +122,9 @@ public class DOS2Extract implements IDocumentExtract {
         first5 = true, first = true;
     if (print) {
       if (buildNew) {
-        System.out.println("----------------------------左边是原文本，右边是增量文本-----------------");
-      } else {
         System.out.println("----------------------------左边是增量文本，右边是原文本-----------------");
+      } else {
+        System.out.println("----------------------------左边是原文本，右边是增量文本-----------------");
       }
     }
     while (it.hasNext()) {
